@@ -43,7 +43,7 @@ export default {
 
     addTodo(){
 
-      axios.post("https://vue-deneme-8505d-default-rtdb.firebaseio.com/todoList.json", {text : this.todoText, isCompleted:false})
+      axios.post("https://vue-deneme-8505d-default-rtdb.firebaseio.com/todoList.json", {text : this.todoText, isCompleted:false, completedDate: null})
       .then(() => {
         this.getAllTodos()
 
@@ -75,27 +75,34 @@ export default {
      this.todoList = [];
       axios.get("https://vue-deneme-8505d-default-rtdb.firebaseio.com/todoList.json")
           .then(response => {
-
+            console.log("firebase log :", response.data);
+            let currentDate = new Date();
             for (let key in response.data){
+              let completedDate = new Date(response.data[key].completedDate);
+              if (!response.data[key].completedDate || (response.data[key].completedDate && (currentDate - completedDate) < 60000)) {
+                let todo = {
+                  text : response.data[key].text,
+                  id : key,
+                  isCompleted: response.data[key].isCompleted,
 
-              let todo = {
-                text : response.data[key].text,
-                id : key,
-                isCompleted: response.data[key].isCompleted,
+                }
+                this.todoList.push(todo);
 
               }
-              this.todoList.push(todo);
-
 
 
             }
-            console.log(this.todoList);
+            console.log("todolist log :", this.todoList);
           })
 
     },
     completeTodo(todoId){
       console.log("test" + todoId);
-      axios.patch("https://vue-deneme-8505d-default-rtdb.firebaseio.com/todoList/" + todoId + ".json", {isCompleted: true})
+      axios.patch("https://vue-deneme-8505d-default-rtdb.firebaseio.com/todoList/" + todoId + ".json",
+          {
+            isCompleted: true,
+            completedDate: new Date()
+          })
           .then(() =>{
 
             this.getAllTodos();
