@@ -54,6 +54,7 @@ export default {
     },
 
     deletePost() {
+      console.log("test", this.detail.id);
       axios.delete(`https://jsonplaceholder.typicode.com/posts/${this.detail.id}`)
           .then((response) => {
             console.log("delete", response.data);
@@ -69,6 +70,7 @@ export default {
           .then((response) => {
             this.title = response.data.title;
             this.body = response.data.body;
+            console.log("detay", this.detail.id)
           });
     },
   }
